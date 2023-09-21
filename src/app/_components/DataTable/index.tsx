@@ -1,4 +1,4 @@
-import { Table, Thead, Tr, Th, chakra, Tbody, Td } from "@chakra-ui/react";
+import { Table, Thead, Tr, Th, chakra, Tbody, Td, Box } from "@chakra-ui/react";
 import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useState } from "react";
 
@@ -24,50 +24,52 @@ export default function DataTable<Data extends object>({
    });
 
    return (
-      <Table>
-         <Thead>
-            {table.getHeaderGroups().map(headerGroup => (
-               <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                     const meta: any = header.column.columnDef.meta;
-                     return (
-                        <Th
-                           key={header.id}
-                           onClick={header.column.getToggleSortingHandler()}
-                           isNumeric={meta?.isNumeric}
-                        >
-                           {flexRender(header.column.columnDef.header, header.getContext())}
+      <Box overflow={'auto'} maxH={'80vh'}>
+         <Table>
+            <Thead>
+               {table.getHeaderGroups().map(headerGroup => (
+                  <Tr key={headerGroup.id}>
+                     {headerGroup.headers.map((header) => {
+                        const meta: any = header.column.columnDef.meta;
+                        return (
+                           <Th
+                              key={header.id}
+                              onClick={header.column.getToggleSortingHandler()}
+                              isNumeric={meta?.isNumeric}
+                           >
+                              {flexRender(header.column.columnDef.header, header.getContext())}
 
-                           <chakra.span pl="4">
-                              {header.column.getIsSorted() ? (
-                                 header.column.getIsSorted() === "desc" ? (
-                                    <span>⬆️</span>
-                                 ) : (
-                                    <span>⬇️</span>
-                                 )
-                              ) : null}
-                           </chakra.span>
-                        </Th>
-                     );
-                  })}
-               </Tr>
-            ))}
-         </Thead>
+                              <chakra.span pl="4">
+                                 {header.column.getIsSorted() ? (
+                                    header.column.getIsSorted() === "desc" ? (
+                                       <span>⬆️</span>
+                                    ) : (
+                                       <span>⬇️</span>
+                                    )
+                                 ) : null}
+                              </chakra.span>
+                           </Th>
+                        );
+                     })}
+                  </Tr>
+               ))}
+            </Thead>
 
-         <Tbody>
-            {table.getRowModel().rows.map((row) => (
-               <Tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                     const meta: any = cell.column.columnDef.meta;
-                     return (
-                        <Td key={cell.id} isNumeric={meta?.isNumeric}>
-                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </Td>
-                     );
-                  })}
-               </Tr>
-            ))}
-         </Tbody>
-      </Table>
+            <Tbody>
+               {table.getRowModel().rows.map((row) => (
+                  <Tr key={row.id}>
+                     {row.getVisibleCells().map((cell) => {
+                        const meta: any = cell.column.columnDef.meta;
+                        return (
+                           <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                           </Td>
+                        );
+                     })}
+                  </Tr>
+               ))}
+            </Tbody>
+         </Table>
+      </Box>
    );
 }

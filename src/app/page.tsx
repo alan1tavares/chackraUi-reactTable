@@ -2,53 +2,80 @@
 
 import Image from 'next/image'
 import styles from './page.module.css'
-import { Table, Tbody, Td, Text, Th, Thead, Tr, chakra } from '@chakra-ui/react'
+import { Container, Icon, Link, Table, Tbody, Td, Text, Th, Thead, Tr, chakra } from '@chakra-ui/react'
 import { ColumnDef, SortingState, createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DataTable from './_components/DataTable'
+import NextLink from 'next/link'
+import { BsEye, BsPencilSquare, BsTrash } from 'react-icons/bs'
+import api, { Character } from '@/module/api'
 
-type Person = {
-   firstName: string
-   age: number
-}
-
-const defaultData: Person[] = [
+const columns: ColumnDef<Character, any>[] = [
    {
-      firstName: 'tanner',
-      age: 24
+      id: 'id',
+      header: "Id",
+      accessorKey: 'id'
    },
    {
-      firstName: 'bob',
-      age: 31
-   }
-]
-
-const columnHelper = createColumnHelper<Person>()
-
-const columns: ColumnDef<Person, any>[] = [
-   columnHelper.accessor('firstName', {
-      cell: info => info.getValue(),
-      header: "First Name"
-   }),
-   columnHelper.accessor('age', {
-      cell: info => info.getValue(),
-      header: "Age"
-   }),
-   columnHelper.display({
-      id: 'actions',
+      id: 'name',
+      header: "Name",
+      accessorKey: 'name'
+   },
+   {
+      id: 'gender',
+      header: 'Gender',
+      accessorKey: 'gender',
+   },
+   {
+      id: 'status',
+      header: 'Status',
+      accessorKey: 'status',
+   },
+   {
+      id: 'species',
+      header: 'Species',
+      accessorKey: 'species',
+   },
+   {
+      id: 'view',
       cell: props => {
-         console.log(props);
-         console.log(props.row.original.firstName);
-         return <button>Editar</button>
+         const id = props.row.original.id;
+         return <Link as={NextLink} href={`view/${id}`}><Icon as={BsEye} /> View</Link>
       },
-    }),
+   },
+   {
+      id: 'edit',
+      cell: props => {
+         const id = props.row.original.id;
+         return <Link as={NextLink} href={`edit/${id}`}> <Icon as={BsPencilSquare} /> Edit</Link>
+      },
+   },
+   {
+      id: 'delete',
+      cell: props => {
+         const id = props.row.original.id;
+         return <Link as={NextLink} href={`delete/${id}`}><Icon as={BsTrash} /> Delete</Link>
+      },
+   }
+
 ];
 
 export default function Home() {
+   const [data, setData] = useState<Character[]>([]);
+
+   useEffect(() => {
+      const _ = async () => {
+         const character = await api.get()
+         setData(character);
+      };
+      _();
+   }, [])
 
    return (
-      <main>
-         <DataTable data={defaultData} columns={columns} />
-      </main>
+      <Container as='main'>
+         <Text fontSize={'4xl'}>Table chackraUi + ReactTable</Text>
+         <DataTable data={data} columns={columns} />
+         <Text>Other Contet</Text>
+      </Container>
    )
 }
